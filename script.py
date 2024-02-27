@@ -12,20 +12,15 @@ data_numeric = data.apply(pd.to_numeric, errors='coerce')
 max_amplitude = data_numeric.max()
 min_amplitude = data_numeric.min()
 
-# Step 4: Plotting with Plotly
-fig = go.Figure()
+# Step 4: Create traces for max and min amplitudes
+max_trace = go.Scatter(x=data.index, y=max_amplitude, mode='lines', name='Max Amplitude', line=dict(color='red'))
+min_trace = go.Scatter(x=data.index, y=min_amplitude, mode='lines', name='Min Amplitude', line=dict(color='blue'))
 
-for column in data_numeric.columns:
-    fig.add_trace(go.Scatter(x=data.index, y=data_numeric[column], mode='lines', name=column))
+# Step 5: Plotting with Plotly
+fig = go.Figure([max_trace, min_trace])
 
-    # Add annotations for maximum and minimum amplitudes
-    max_idx = data_numeric[column].idxmax()
-    min_idx = data_numeric[column].idxmin()
-    fig.add_annotation(x=max_idx, y=max_amplitude[column], text=f'Max: {max_amplitude[column]:.2f}', showarrow=True, arrowhead=1)
-    fig.add_annotation(x=min_idx, y=min_amplitude[column], text=f'Min: {min_amplitude[column]:.2f}', showarrow=True, arrowhead=1)
+# Step 6: Customize Plot Layout
+fig.update_layout(title='Amplitude vs. Sample Data', xaxis_title='Sample Data', yaxis_title='Amplitude')
 
-# Step 5: Customize Plot Layout
-fig.update_layout(title='Amplitude vs. Time', xaxis_title='Time', yaxis_title='Amplitude')
-
-# Step 6: Show Plot (Interactive)
+# Step 7: Show Plot (Interactive)
 fig.show()
