@@ -1,32 +1,31 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
+import plotly.graph_objs as go
 
-def plot_data(data):
-    plt.figure(figsize=(10, 6))
+# Step 1: Read Data from Excel
+data = pd.read_excel('test_with cell_13.02.24.pcus 1 hour_exported_S0_C1.xlsx')
 
-    for col in data.columns:
-        if isinstance(col, str) and col.startswith('Samples'):
-            plt.plot(data.index, np.abs(data[col]), label=col.split(':')[1].strip())
+# Step 2: Data Processing
+# Convert non-numeric values to NaN
+data_numeric = data.apply(pd.to_numeric, errors='coerce')
 
-    plt.title('Sample Data Plot')
-    plt.xlabel('Index')
-    plt.ylabel('Absolute Value')
-    plt.legend(loc='upper left')
-    plt.grid(True)
-    
-    plt.tight_layout()
-    plt.yscale('log')  # Set the y-axis scale to logarithmic
-    plt.show()
+# Step 3: Calculate maximum and minimum amplitudes
+max_amplitude = data_numeric.max()
+min_amplitude = data_numeric.min()
 
-def main():
-    file_path = "test_with cell_13.02.24.pcus 1 hour_exported_S0_C1.xlsx"
-    try:
-        data = pd.read_excel(file_path, skiprows=118, header=None)
-        data.dropna(inplace=True)
-        plot_data(data)
-    except Exception as e:
-        print(f"Error processing data: {e}")
+# Step 4: Plotting with Plotly
+fig = go.Figure()
 
-if __name__ == "__main__":
-    main()
+for column in data_numeric.columns:
+    fig.add_trace(go.Scatter(x=data.index, y=data_numeric[column], mode='lines', name=column))
+
+    # Add annotations for maximum and minimum amplitudes
+    max_idx = data_numeric[column].idxmax()
+    min_idx = data_numeric[column].idxmin()
+    fig.add_annotation(x=max_idx, y=max_amplitude[column], text=f'Max: {max_amplitude[column]:.2f}', showarrow=True, arrowhead=1)
+    fig.add_annotation(x=min_idx, y=min_amplitude[column], text=f'Min: {min_amplitude[column]:.2f}', showarrow=True, arrowhead=1)
+
+# Step 5: Customize Plot Layout
+fig.update_layout(title='Amplitude vs. Time', xaxis_title='Time', yaxis_title='Amplitude')
+
+# Step 6: Show Plot (Interactive)
+fig.show()
