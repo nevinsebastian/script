@@ -55,5 +55,4 @@ python script_name.py
 ## Output
 
 The script generates a Plotly figure displaying the maximum and minimum amplitudes against the sample data. The x-Feel free to adjust this README as needed, and let me know if you require any further modifications!axis labels are  alphabet labels for better visualization.
-```
 
